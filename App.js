@@ -1,4 +1,4 @@
-import {Component, useState} from 'react';
+import {Component} from 'react';
 import * as React from 'react';
 import { Text, View, Button, ActivityIndicator, TextInput, ScrollView, FlatList, StyleSheet, Alert } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
@@ -12,7 +12,7 @@ class Notez extends Component {
 	super(props) 
 		
 	this.state = {
-		notes: [{note:"jhkasdja"},]
+		notes: []
 		
 		
 	}
@@ -21,77 +21,45 @@ class Notez extends Component {
 	
 	}
 	
-	componentDidMount = () => AsyncStorage.getItem('note', (err, result) => {
-		
+	componentDidMount = () =>
+	
+	AsyncStorage.getItem('note', (err, result) => {
+	
 	console.log(result)	
-	const note = {
-		
-		note: result
+	
+	const notez = JSON.parse(result)
+	console.log(notez)
+	if (notez === null) {
 		
 	}
-	console.log(note)
-	const notelist = this.state.notes.concat(note)
 	
-	
-	console.log(notelist)
+	else {
 
-	this.setState({notes : notelist})
-	
+	this.setState({notes : notez})
+	console.log(this.state.notes)
+	}
 	})
+	
+	
 	
 	
    
-	
-	
-	addNote = (event) => {
-		event.preventDefault()
-
-	const note = {
-		
-		note: this.state.newNote
-	}
-	
-	const testnotes = this.state.notes.map(note => note.note)
-	console.log(testnotes)
-	console.log(note)
-	
-	if (testnotes.includes(note)) {
-	
-    Alert.alert(
-      "Duplicate note detected"
-      
-    )}
-		
-		
-	const notez = this.state.notes.concat(note)
-
-	this.setState({
-    notes: notez,
-	newNote: ''
-	})
-	}
-	
-	handleNoteAdd = (newNote) => {
-	
-	this.setState({ newNote})
-	
-	
-	}
-	
-	
 	render() {
 		
 		
 	return (
 	<View style={styles.container}>
 		<Text style={styles.header}>Muistiinpanot</Text>
-		<ScrollView>
+		<ScrollView style={styles.scrollView}>
         <FlatList
           data={this.state.notes}
           renderItem={({item}) => <Text style={styles.item}>{item.note}</Text>}
         />
+		
+		
 		</ScrollView>
 		<Button title="Uusi muistiinpano" onPress={() => this.props.navigation.navigate('InputView')} />
+		
 		</View>
 		)
 	}
@@ -108,13 +76,22 @@ class Notez extends Component {
 	super(props) 
 		
 	this.state = {
-		newNote: ''
+		notes:[],
+		newNote: '',
+		
 		
 	}
 	
 	this.handleNoteAdd = this.handleNoteAdd.bind(this)
 	
+	this.addNote = this.addNote.bind(this)
+	
 	}
+	
+	
+	
+	
+	
 	
 	handleNoteAdd = (newNote) => {
 	
@@ -124,18 +101,66 @@ class Notez extends Component {
 	
 	}
 	
-	addNote = (event) => {
-		event.preventDefault()
-
-	const note = this.state.newNote
+	componentDidMount = () => 
 	
 	
-	AsyncStorage.setItem('note', JSON.stringify(note))
-	console.log(note)
-	this.setState({ newNote: ''})
+	AsyncStorage.getItem('note', (err, result) => {
+	
+	const notess = this.state.notes
+	console.log(result)	
+	const notezz = JSON.parse(result)
+	console.log(notezz)
+	if (notess === null) {
+		
 	
 	}
+	else {
 	
+	
+	console.log(notezz)
+	this.setState({notes: notess.concat(notezz)})
+	console.log(this.state.notes)
+	
+	}
+	})
+	
+	
+	
+	
+	addNote = (event) => {
+	event.preventDefault()
+		
+	const note = {
+		
+		note: this.state.newNote
+	}
+	
+	console.log(note.note)
+	console.log(this.state.notes)
+	
+	var saveNote = ""
+	
+	
+	if (this.state.notes[0] === null) {
+		saveNote = note
+		console.log(saveNote)
+	}
+	else {
+	saveNote = this.state.notes.concat(note)
+	console.log(saveNote)
+	}
+	
+	
+	const savedarray = JSON.stringify(saveNote)
+	console.log(savedarray)
+	
+	AsyncStorage.setItem('note', savedarray)
+	
+	
+	this.setState({ newNote: ''})
+	
+	
+	}
 	
 		
 		
@@ -163,21 +188,34 @@ class Notez extends Component {
 const styles = StyleSheet.create({
   container: {
    flex: 1,
+   flexDirection: "column",
+	justifyContent: "flex-start",
+	alignItems: "baseline",
    paddingTop: 22
+  },
+  scrollView: {
+  flex: 2,
+  
+  backgroundColor: "black"
+  
   },
   item: {
     padding: 10,
     fontSize: 18,
     height: 44,
+	color: "white"
   },
   input: {
 	height: 40,
-	fontSize: 25
+	fontSize: 25,
+	backgroundColor: "green"
   },
   header: {
-	  
+	color:"white",
+	backgroundColor: "black",
 	fontSize: 35  
-  }
+  },
+  
   
   
   
